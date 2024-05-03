@@ -591,6 +591,14 @@ if(TARGET test_timer)
   target_link_libraries(test_timer ${PROJECT_NAME} mimick)
 endif()
 
+ament_add_gtest(test_reinitialized_timers test_reinitialized_timers.cpp
+  APPEND_LIBRARY_DIRS "${append_library_dirs}")
+if(TARGET test_reinitialized_timers)
+  ament_target_dependencies(test_reinitialized_timers
+    "rcl")
+  target_link_libraries(test_reinitialized_timers ${PROJECT_NAME} mimick)
+endif()
+
 ament_add_gtest(test_timers_manager test_timers_manager.cpp
   APPEND_LIBRARY_DIRS "${append_library_dirs}")
 if(TARGET test_timers_manager)
