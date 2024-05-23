@@ -1,10 +1,17 @@
-// Copyright 2022 iRobot Corporation. All Rights Reserved
+// Copyright 2022-2024 iRobot Corporation. All Rights Reserved
 
 #ifndef RCLCPP__EXPERIMENTAL__EXECUTORS__EVENTS_EXECUTOR__LOCK_FREE_EVENTS_QUEUE_HPP_
 #define RCLCPP__EXPERIMENTAL__EXECUTORS__EVENTS_EXECUTOR__LOCK_FREE_EVENTS_QUEUE_HPP_
 
-#include "concurrent_queue/blockingconcurrentqueue.h"
-#include "events_queue.hpp"
+#include "rclcpp/experimental/executors/events_executor/concurrent_queue/blockingconcurrentqueue.h"
+#include "rclcpp/experimental/executors/events_executor/events_queue.hpp"
+
+namespace rclcpp
+{
+namespace experimental
+{
+namespace executors
+{
 
 /**
  * @brief This class implements an EventsQueue as a simple wrapper around
@@ -17,7 +24,7 @@
  * queue aims to fix the issue of publishers being blocked by the executor extracting
  * events from the queue in a different thread, causing expensive mutex contention.
  */
-class LockFreeEventsQueue : public rclcpp::experimental::executors::EventsQueue
+class LockFreeEventsQueue : public EventsQueue
 {
 public:
   RCLCPP_PUBLIC
@@ -26,7 +33,7 @@ public:
     // It's important that all threads have finished using the queue
     // and the memory effects have fully propagated, before it is destructed.
     // Consume all events
-    rclcpp::experimental::executors::ExecutorEvent event;
+    ExecutorEvent event;
     while (event_queue_.try_dequeue(event)) {}
   }
 
@@ -36,9 +43,9 @@ public:
    */
   RCLCPP_PUBLIC
   void
-  enqueue(const rclcpp::experimental::executors::ExecutorEvent & event) override
+  enqueue(const ExecutorEvent & event) override
   {
-    rclcpp::experimental::executors::ExecutorEvent single_event = event;
+    ExecutorEvent single_event = event;
     single_event.num_events = 1;
     for (size_t ev = 0; ev < event.num_events; ev++) {
       event_queue_.enqueue(single_event);
@@ -91,5 +98,10 @@ public:
 private:
   moodycamel::BlockingConcurrentQueue<rclcpp::experimental::executors::ExecutorEvent> event_queue_;
 };
+
+}  // namespace executors
+}  // namespace experimental
+}  // namespace rclcpp
+
 
 #endif  // RCLCPP__EXPERIMENTAL__EXECUTORS__EVENTS_EXECUTOR__LOCK_FREE_EVENTS_QUEUE_HPP_

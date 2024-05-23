@@ -5,7 +5,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "rclcpp/experimental/executors/events_executor/events_executor.hpp"
-#include "rclcpp/experimental/executors/events_executor/simple_events_queue.hpp"
+#include "rclcpp/experimental/executors/events_executor/lock_free_events_queue.hpp"
 
 using rclcpp::experimental::executors::EventsExecutor;
 
@@ -28,7 +28,7 @@ TEST_F(TimersTest, TimersWithSamePeriod)
 {
     auto timers_period = std::chrono::milliseconds(50);
     auto node = std::make_shared<rclcpp::Node>("test_node");
-    auto events_queue = std::make_unique<rclcpp::experimental::executors::SimpleEventsQueue>();
+    auto events_queue = std::make_unique<rclcpp::experimental::executors::LockFreeEventsQueue>();
     auto executor = std::make_unique<EventsExecutor>(std::move(events_queue), true, rclcpp::ExecutorOptions());
 
     executor->add_node(node);
