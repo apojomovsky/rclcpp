@@ -6,6 +6,7 @@ find_package(ament_cmake_ros REQUIRED)
 find_package(action_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcl_action REQUIRED)
+find_package(example_interfaces REQUIRED)
 find_package(rcpputils REQUIRED)
 find_package(rosidl_runtime_c REQUIRED)
 
@@ -105,6 +106,19 @@ if(BUILD_TESTING)
       "test_msgs"
     )
     target_link_libraries(test_server
+      ${PROJECT_NAME}
+      mimick
+    )
+  endif()
+
+  ament_add_gtest(test_actions test/test_actions.cpp TIMEOUT 180)
+  if(TARGET test_actions)
+    ament_target_dependencies(test_actions
+      "example_interfaces"
+      "rcpputils"
+      "test_msgs"
+    )
+    target_link_libraries(test_actions
       ${PROJECT_NAME}
       mimick
     )
